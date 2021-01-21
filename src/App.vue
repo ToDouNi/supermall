@@ -17,6 +17,7 @@ export default {
 
 <style>
 @import url('assets/css/base.css');
+/* html,body{overflow:hidden;overflow-y:auto;} */
 #app{
   color:var(--color-text);
 }
