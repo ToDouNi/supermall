@@ -20,5 +20,7 @@ export default {
 /* html,body{overflow:hidden;overflow-y:auto;} */
 #app{
   color:var(--color-text);
+  height: 100vh;
+  overflow: hidden;
 }
 </style>

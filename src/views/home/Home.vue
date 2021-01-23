@@ -1,15 +1,25 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <home-swiper :banners="banners" />
-    <home-recommend-view :recommends="recommends" />
-    <feature-view></feature-view>
-    <tab-control
-      class="tab-control"
-      :titles="['流行', '新款', '热门']"
-      @tabClick="tabClick"
-    ></tab-control>
-    <goods-list :goods="showGoods" />
+    <scroll
+      class="content"
+      ref="scroll"
+      :probe-type="3"
+      @scroll="contentScroll"
+    >
+      <home-swiper :banners="banners" />
+      <home-recommend-view :recommends="recommends" />
+      <feature-view />
+      <tab-control
+        class="tab-control"
+        :titles="['流行', '新款', '热门']"
+        @tabClick="tabClick"
+      />
+
+      <goods-list :goods="showGoods" />
+    </scroll>
+
+    <back-top @click.native="backTop" v-show="isBackTopShow" />
   </div>
 </template>
 
@@ -19,11 +29,12 @@
  */
 //common
 import NavBar from "components/common/navbar/NavBar";
+import Scroll from "components/common/scroll/Scroll";
 
 //content
 import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
-
+import BackTop from "components/content/backTop/BackTop";
 /**
  * 页面子组件
  */
@@ -47,7 +58,8 @@ export default {
         news: { page: 0, list: [] },
         sell: { page: 0, list: [] },
       },
-      currentValue: 'pop'
+      currentValue: "pop",
+      isBackTopShow: false,
     };
   },
   created() {
@@ -57,10 +69,11 @@ export default {
     });
     this.getHomeGoods();
   },
-  computed:{
-    showGoods(){
-      return this.goods[this.currentValue].list
-    }
+  mounted() {},
+  computed: {
+    showGoods() {
+      return this.goods[this.currentValue].list;
+    },
   },
   methods: {
     /**
@@ -76,13 +89,19 @@ export default {
      * 事件鉴定方法
      */
     tabClick(index) {
-      if(index === 0) {
-        this.currentValue = 'pop'
-      }else if(index === 1){
-        this.currentValue = 'news'
-      }else {
-        this.currentValue = 'sell'
+      if (index === 0) {
+        this.currentValue = "pop";
+      } else if (index === 1) {
+        this.currentValue = "news";
+      } else {
+        this.currentValue = "sell";
       }
+    },
+    backTop() {
+      this.$refs.scroll.scrollTo(0, 0, 500);
+    },
+    contentScroll(position) {
+      this.isBackTopShow = position.y < -1000;
     },
   },
   components: {
@@ -92,6 +111,8 @@ export default {
     FeatureView,
     TabControl,
     GoodsList,
+    Scroll,
+    BackTop,
   },
 };
 </script>
@@ -99,6 +120,8 @@ export default {
 <style scoped>
 #home {
   padding-top: 44px;
+  width: 100%;
+  height: 100vh;
 }
 .home-nav {
   background: var(--color-tint);
@@ -112,5 +135,9 @@ export default {
 .tab-control {
   position: sticky;
   top: 44px;
+}
+.content {
+  height: calc(100% - 44px);
+  overflow: hidden;
 }
 </style>
